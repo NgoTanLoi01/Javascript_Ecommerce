@@ -1,2 +1,2 @@
-# NgoTanLoi-_Javascript_Project_Ecommerce
+# NgoTanLoi_Javascript_Project_Ecommerce
 Javascript_Project
