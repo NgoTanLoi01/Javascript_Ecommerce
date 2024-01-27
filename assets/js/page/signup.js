@@ -5,6 +5,10 @@ const inputEmailSelector = document.querySelector(".email");
 const inputPasswordSelector = document.querySelector(".password");
 
 const inputAllSelector = document.querySelectorAll(".form-group input");
+const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+//validate cho tung field mot (tung o input)
+//trong tung o input check se dinh kem cac rule (quay tac validate)
 
 //2. function xu ly su kien + chay lan dau load
 function handleSignUpClick(event) {
@@ -13,44 +17,128 @@ function handleSignUpClick(event) {
   for (let i = 0; i < inputAllSelector.length; i++) {
     let inputSelector = inputAllSelector[i];
     let valueInput = inputSelector.value;
-    let divMessageSelector = inputSelector.closest('.form-group').querySelector('.error_message');
+    let divMessageSelector = inputSelector
+      .closest(".form-group")
+      .querySelector(".error_message");
     let name = inputSelector.name;
 
-
     //validate khong duoc rong
-    if(valueInput === ''){
-        //them vien do cho input
-        inputSelector.classList.add('error');
-        //hien thi message loi
-        let message = name + ' không được để trống.';
-        divMessageSelector.textContent = message;
-    }else if(name === 'name'){
-        // validate name toi thieu 3 ky tu
-        minLengthValidate(inputSelector, name, 'Tên phải có tối thiểu 3 ký tự.');
-    }else if(name === 'email'){
-       // validate email toi thieu 3 ky tu
-       minLengthValidate(inputSelector, name, 'Email phải có tối thiểu 3 ký tự.');
-    }else if(name === 'password'){
-        // validate password toi thieu 8 ky tu
-        minLengthValidate(inputSelector, name, 'Password phải có tối thiểu 8 ký tự.');
+    if (name === "name") {
+      let isRequireValid = requireValidate(inputSelector, name);
+      //check thanh cong
+      if (isRequireValid) {
+        showSuccess(inputSelector, divMessageSelector);
+      }
+    } else if (name === "name") {
+      // validate name toi thieu 3 ky tu
+      minLengthValidate(inputSelector, name, "Tên phải có tối thiểu 3 ký tự.");
+    } else if (name === "email") {
+      let isMinlengthValid;
+      let isEmailRegexValid;
+      let isRequireValid = requireValidate(inputSelector, name);
+      // validate email toi thieu 3 ky tu
+      if (isRequireValid) {
+        isMinlengthValid = minLengthValidate(
+          inputSelector,
+          name,
+          "Email phải có tối thiểu 3 ký tự."
+        );
+      }
+      //validate email
+      if (isRequireValid && isMinlengthValid) {
+        isEmailRegexValid = emailRegexValidate(inputSelector, name);
+      }
+      //check validate thanh cong
+      if (isRequireValid && isMinlengthValid && isEmailRegexValid) {
+        showSuccess(inputSelector, divMessageSelector);
+      }
+    } else if (name === "password") {
+      let isRequireValid = requireValidate(inputSelector, name);
+      let isMinlengthValid;
+      // validate password toi thieu 8 ky tu
+      if (isRequireValid) {
+        isMinlengthValid = minLengthValidate(
+          inputSelector,
+          name,
+          "Password phải có tối thiểu 8 ký tự."
+        );
+      }
+      //check thanh cong
+      if (isRequireValid && isMinlengthValid) {
+        showSuccess(inputSelector, divMessageSelector);
+      }
+    } else {
+      showSuccess(inputSelector, divMessageSelector);
     }
-   }
+  }
+}
+
+function showSuccess(inputSelector, divMessageSelector) {
+  inputSelector.classList.remove("error");
+  divMessageSelector.textContent = "";
+}
+
+//rule require validate
+function requireValidate(inputSelector, name, message) {
+  let isValid = true;
+  let valueInput = inputSelector.value;
+  let divMessageSelector = inputSelector
+    .closest(".form-group")
+    .querySelector(".error_message");
+  if (valueInput === "") {
+    isValid = false;
+    //them vien do cho input
+    inputSelector.classList.add("error");
+    //hien thi message loi
+    let messageError = name + " không được để trống.";
+    if (message) {
+      messageError = message;
+    }
+    divMessageSelector.textContent = messageError;
+  }
+  return isValid;
+}
+
+//rule validate email
+function emailRegexValidate(inputSelector, name, message) {
+  let isValid = true;
+  let valueInput = inputSelector.value;
+  let isValueRegex = regexEmail.test(valueInput);
+  let divMessageSelector = inputSelector
+    .closest(".form-group")
+    .querySelector(".error_message");
+
+  if (isValueRegex === false) {
+    isValid = false;
+    inputSelector.classList.add("error");
+    let messageError = name + " không hợp lệ.";
+    if (message) {
+      messageError = message;
+    }
+    divMessageSelector.textContent = messageError;
+  }
+  return isValid;
 }
 
 //rule validate min-length
-function minLengthValidate(inputSelector, name, message){
-    let valueInput = inputSelector.value;
-    let divMessageSelector = inputSelector.closest('.form-group').querySelector('.error_message');
-    //optional    
-    let minLength = inputSelector.getAttribute('min_length')
+function minLengthValidate(inputSelector, name, message) {
+  let isValid = true;
+  let valueInput = inputSelector.value;
+  let divMessageSelector = inputSelector
+    .closest(".form-group")
+    .querySelector(".error_message");
+  //optional
+  let minLength = inputSelector.getAttribute("min_length");
 
-    if(valueInput.length < minLength){
-        let messageError = name + ' tối thiểu ' + minLength + ' kí tự.';
-        if(message){
-            messageError = message;
-        }
-        divMessageSelector.textContent = message;
+  if (valueInput.length < minLength) {
+    isValid = false;
+    let messageError = name + " tối thiểu " + minLength + " kí tự.";
+    if (message) {
+      messageError = message;
     }
+    divMessageSelector.textContent = messageError;
+  }
+  return isValid;
 }
 
 //3. Them su kien cho phan tu
