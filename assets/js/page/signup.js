@@ -60,7 +60,7 @@ function handleSignUpClick(event) {
         isMinlengthValid = minLengthValidate(
           inputSelector,
           name,
-          "Password phải có tối thiểu 8 ký tự."
+          "password phải có tối thiểu 8 ký tự."
         );
       }
       //check thanh cong
@@ -68,7 +68,27 @@ function handleSignUpClick(event) {
         showSuccess(inputSelector, divMessageSelector);
       }
     } else {
-      showSuccess(inputSelector, divMessageSelector);
+      let isRequireValid = requireValidate(inputSelector, name);
+      let isMinlengthValid;
+      let isCompareValid;
+      // validate password toi thieu 8 ky tu
+      if (isRequireValid) {
+        isMinlengthValid = minLengthValidate(
+          inputSelector,
+          name,
+          "confirm_password phải có tối thiểu 8 ký tự."
+        );
+      }
+
+      //validate compare with password
+      if(isRequireValid && isMinlengthValid){
+        isCompareValid = compareFieldsValidate(inputSelector, name);
+      }
+
+      //check thanh cong
+      if (isRequireValid && isMinlengthValid && isCompareValid) {
+        showSuccess(inputSelector, divMessageSelector);
+      }
     }
   }
 }
@@ -76,6 +96,28 @@ function handleSignUpClick(event) {
 function showSuccess(inputSelector, divMessageSelector) {
   inputSelector.classList.remove("error");
   divMessageSelector.textContent = "";
+}
+
+//rule compare data
+function compareFieldsValidate(inputSelector, name, message) {
+  let isValid = true;
+  let valueInput = inputSelector.value;
+  let compareSelectorClass = inputSelector.getAttribute("selector_compare");
+  let compareSelector = document.querySelector("." + compareSelectorClass);
+  let divMessageSelector = inputSelector
+    .closest(".form-group")
+    .querySelector(".error_message");
+  if (compareSelector.value !== valueInput) {
+    isValid = false;
+    inputSelector.classList.add("error");
+    //hien thi message loi
+    let messageError = 'dữ liệu nhập ở' + name + ' không trùng với dữ liệu nhập ở ' + compareSelectorClass;
+    if (message) {
+      messageError = message;
+    }
+    divMessageSelector.textContent = messageError;
+  }
+  return isValid;
 }
 
 //rule require validate
@@ -132,6 +174,7 @@ function minLengthValidate(inputSelector, name, message) {
 
   if (valueInput.length < minLength) {
     isValid = false;
+    inputSelector.classList.add("error");
     let messageError = name + " tối thiểu " + minLength + " kí tự.";
     if (message) {
       messageError = message;
