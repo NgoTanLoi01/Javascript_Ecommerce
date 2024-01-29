@@ -6,6 +6,7 @@ const inputPasswordSelector = document.querySelector(".password");
 
 const inputAllSelector = document.querySelectorAll(".form-group input");
 const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const errorMessageAll = document.querySelectorAll('.error_message');
 
 //validate cho tung field mot (tung o input)
 //trong tung o input check se dinh kem cac rule (quay tac validate)
@@ -13,6 +14,7 @@ const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 //2. function xu ly su kien + chay lan dau load
 function handleSignUpClick(event) {
   event.preventDefault();
+  let isFormValid = true;
   //1. Thuc hien validate
   for (let i = 0; i < inputAllSelector.length; i++) {
     let inputSelector = inputAllSelector[i];
@@ -28,7 +30,7 @@ function handleSignUpClick(event) {
       //check thanh cong
       if (isRequireValid) {
         showSuccess(inputSelector, divMessageSelector);
-      }
+      } 
     } else if (name === "name") {
       // validate name toi thieu 3 ky tu
       minLengthValidate(inputSelector, name, "Tên phải có tối thiểu 3 ký tự.");
@@ -91,6 +93,20 @@ function handleSignUpClick(event) {
       }
     }
   }
+
+  //kiem tra khong co o input nao co loi validate
+  //1.luu user và localStorege
+  //2. redirect den man hinh login
+  for(let i = 0; i < errorMessageAll.length; i ++){
+    if(errorMessageAll[i].textContent !== ''){
+      isFormValid =false;
+      break;
+    }    
+  }
+  if(isFormValid){
+    console.log('to page login');
+  }
+
 }
 
 function showSuccess(inputSelector, divMessageSelector) {
