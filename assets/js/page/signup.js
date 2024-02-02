@@ -2,73 +2,107 @@
 const btnSignUpSelector = document.querySelector(".btn-signup");
 const inputAllSelector = document.querySelectorAll(".form-group input");
 const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-const errorMessageAll = document.querySelectorAll(".error_message");
 
 //validate cho tung field mot (tung o input)
 //trong tung o input check se dinh kem cac rule (quay tac validate)
 
-//2. function xu ly su kien + chay lan dau load
+//======================= Start Listener Function======================
 function handleSignUpClick(event) {
   event.preventDefault();
   //1. Thuc hien validate
   for (let i = 0; i < inputAllSelector.length; i++) {
     let inputSelector = inputAllSelector[i];
-    let valueInput = inputSelector.value;
-    let divMessageSelector = inputSelector
-      .closest(".form-group")
-      .querySelector(".error_message");
     let name = inputSelector.name;
-
     //validate khong duoc rong
     if (name === "name") {
-      //require
-      if (!require(inputSelector)) {
-        showError(inputSelector, "Tên không được để trống");
-      } else {
-        showSuccess(inputSelector);
-      }
+      validateName(inputSelector);
     } else if (name === "email") {
-      if (!require(inputSelector)) {
-        showError(inputSelector, "Email không được để trống");
-      } else if (!minLength(inputSelector)) {
-        showError(
-          inputSelector,
-          `Email tối thiểu ${inputSelector.getAttribute("min_length")} kí tự`
-        );
-      } else if (!emailRegex(inputSelector)) {
-        showError(inputSelector, "Email không đúng định dạng");
-      } else {
-        showSuccess(inputSelector);
-      }
+      validateEmail(inputSelector);
     } else if (name === "password") {
-      if(!require(inputSelector)){
-        showError(inputSelector, "Password không được để trống");
-      }else if(!minLength(inputSelector)){
-        showError(inputSelector, `Password tối thiểu ${inputSelector.getAttribute('min_length')} kí tự`);
-      }else{
-        showSuccess(inputSelector);
-      }
+      validatePassword(inputSelector);
     } else {
-      if(!require(inputSelector)){
-        showError(inputSelector, "Confirm password không được để trống");
-      }else if(!minLength(inputSelector)){
-        showError(inputSelector, `Confirm password tối thiểu ${inputSelector.getAttribute('min_length')} kí tự`);
-      }else if(!comparePass(inputSelector)){
-        showError(inputSelector, "Confirm password không trùng với password");
-      }
-      else{
-        showSuccess(inputSelector);
-      }
+      validateConfirmPasswrod(inputSelector);
     }
   }
-
   //kiem tra khong co o input nao co loi validate
-  //1.luu user và localStorege
-  //2. redirect den man hinh login
 }
 
-//rule require
-//output: return true or false
+//ham chi chay khi nguoi dung nhap value co su thay doi
+function handleChangeValue(event) {
+  let inputSelector = event.target;
+  let nameInput = inputSelector.name;
+  if (nameInput === "name") {
+    validateName(inputSelector);
+  } else if (nameInput === "email") {
+    validateEmail(inputSelector);
+  } else if (nameInput === "password") {
+    validatePassword(inputSelector);
+  } else {
+    validateConfirmPasswrod(inputSelector);
+  }
+  console.log(inputSelector);
+}
+
+//======================= End Listener Function======================
+
+//======================= Start Validate Input Function======================
+function validateName(inputSelector) {
+  //require
+  if (!require(inputSelector)) {
+    showError(inputSelector, "Tên không được để trống");
+  } else {
+    showSuccess(inputSelector);
+  }
+}
+
+function validateEmail(inputSelector) {
+  if (!require(inputSelector)) {
+    showError(inputSelector, "Email không được để trống");
+  } else if (!minLength(inputSelector)) {
+    showError(
+      inputSelector,
+      `Email tối thiểu ${inputSelector.getAttribute("min_length")} kí tự`
+    );
+  } else if (!emailRegex(inputSelector)) {
+    showError(inputSelector, "Email không đúng định dạng");
+  } else {
+    showSuccess(inputSelector);
+  }
+}
+
+function validatePassword(inputSelector) {
+  if (!require(inputSelector)) {
+    showError(inputSelector, "Password không được để trống");
+  } else if (!minLength(inputSelector)) {
+    showError(
+      inputSelector,
+      `Password tối thiểu ${inputSelector.getAttribute("min_length")} kí tự`
+    );
+  } else {
+    showSuccess(inputSelector);
+  }
+}
+
+function validateConfirmPasswrod(inputSelector) {
+  if (!require(inputSelector)) {
+    showError(inputSelector, "Confirm password không được để trống");
+  } else if (!minLength(inputSelector)) {
+    showError(
+      inputSelector,
+      `Confirm password tối thiểu ${inputSelector.getAttribute(
+        "min_length"
+      )} kí tự`
+    );
+  } else if (!comparePass(inputSelector)) {
+    showError(inputSelector, "Confirm password không trùng với password");
+  } else {
+    showSuccess(inputSelector);
+  }
+}
+//======================= End Validate Input Function======================
+
+//======================= Start Rules Function======================
+
 function require(inputSelector) {
   return inputSelector.value ? true : false;
 }
@@ -87,13 +121,17 @@ function emailRegex(inputSelector) {
   return regexEmail.test(inputValue);
 }
 
-function comparePass(inputSelector){
+function comparePass(inputSelector) {
   let valueComfirmPass = inputSelector.value;
-  let passwordSelector = document.querySelector('.' + inputSelector.getAttribute('selector_compare'));
+  let passwordSelector = document.querySelector(
+    "." + inputSelector.getAttribute("selector_compare")
+  );
   let valuePassword = passwordSelector.value;
   return valueComfirmPass === valuePassword;
 }
+//======================= End Rules Function======================
 
+//======================= Start Messages Function=================
 function showError(inputSelector, message = null) {
   //1.Hien thi mau do cho o input
   inputSelector.classList.add("error");
@@ -112,5 +150,12 @@ function showSuccess(inputSelector) {
   divMessageSelector.textContent = "";
 }
 
+//======================= End Messages Function=================
+
 //3. Them su kien cho phan tu
 btnSignUpSelector.addEventListener("click", handleSignUpClick);
+//Them su kien input cho cac o nhap lieu
+for (let i = 0; i < inputAllSelector.length; i++) {
+  let inputElement = inputAllSelector[i];
+  inputElement.addEventListener("input", handleChangeValue);
+}
