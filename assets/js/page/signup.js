@@ -9,22 +9,29 @@ const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 //======================= Start Listener Function======================
 function handleSignUpClick(event) {
   event.preventDefault();
+  let isNameValid;
+  let isEmailValid;
+  let isPassValid;
+  let isConfirmPassValid;
   //1. Thuc hien validate
   for (let i = 0; i < inputAllSelector.length; i++) {
     let inputSelector = inputAllSelector[i];
     let name = inputSelector.name;
     //validate khong duoc rong
     if (name === "name") {
-      validateName(inputSelector);
+      isNameValid = validateName(inputSelector);
     } else if (name === "email") {
-      validateEmail(inputSelector);
+      isEmailValid = validateEmail(inputSelector);
     } else if (name === "password") {
-      validatePassword(inputSelector);
+      isPassValid = validatePassword(inputSelector);
     } else {
-      validateConfirmPasswrod(inputSelector);
+      isConfirmPassValid = validateConfirmPasswrod(inputSelector);
     }
   }
-  //kiem tra khong co o input nao co loi validate
+  // kiem tra khong co o input nao loi validate
+  if (isNameValid && isEmailValid && isPassValid && isConfirmPassValid) {
+    console.log('login page');
+  }
 }
 
 //ham chi chay khi nguoi dung nhap value co su thay doi
@@ -40,22 +47,25 @@ function handleChangeValue(event) {
   } else {
     validateConfirmPasswrod(inputSelector);
   }
-  console.log(inputSelector);
 }
 
 //======================= End Listener Function======================
 
 //======================= Start Validate Input Function======================
 function validateName(inputSelector) {
+  let isValid = false;
   //require
   if (!require(inputSelector)) {
     showError(inputSelector, "Tên không được để trống");
   } else {
     showSuccess(inputSelector);
+    isValid = true;
   }
+  return isValid;
 }
 
 function validateEmail(inputSelector) {
+  let isValid = false;
   if (!require(inputSelector)) {
     showError(inputSelector, "Email không được để trống");
   } else if (!minLength(inputSelector)) {
@@ -67,10 +77,13 @@ function validateEmail(inputSelector) {
     showError(inputSelector, "Email không đúng định dạng");
   } else {
     showSuccess(inputSelector);
+    isValid = true;
   }
+  return isValid;
 }
 
 function validatePassword(inputSelector) {
+  let isValid = false;
   if (!require(inputSelector)) {
     showError(inputSelector, "Password không được để trống");
   } else if (!minLength(inputSelector)) {
@@ -80,10 +93,13 @@ function validatePassword(inputSelector) {
     );
   } else {
     showSuccess(inputSelector);
+    isValid = true;
   }
+  return isValid;
 }
 
 function validateConfirmPasswrod(inputSelector) {
+  let isValid = false;
   if (!require(inputSelector)) {
     showError(inputSelector, "Confirm password không được để trống");
   } else if (!minLength(inputSelector)) {
@@ -97,7 +113,9 @@ function validateConfirmPasswrod(inputSelector) {
     showError(inputSelector, "Confirm password không trùng với password");
   } else {
     showSuccess(inputSelector);
+    isValid = true;
   }
+  return isValid;
 }
 //======================= End Validate Input Function======================
 
@@ -157,5 +175,5 @@ btnSignUpSelector.addEventListener("click", handleSignUpClick);
 //Them su kien input cho cac o nhap lieu
 for (let i = 0; i < inputAllSelector.length; i++) {
   let inputElement = inputAllSelector[i];
-  inputElement.addEventListener("input", handleChangeValue);
+  inputElement.addEventListener("blur", handleChangeValue);
 }
