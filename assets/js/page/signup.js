@@ -31,7 +31,7 @@ const methodsRule = {
   },
   minlength: function (valueInput, paramsInput) {
     console.log("minlength running");
-    return valueInput.lenth >= paramsInput;
+    return valueInput.length >= paramsInput;
   },
   email: function (valueInput, paramsInput) {
     console.log("email running");
@@ -39,27 +39,50 @@ const methodsRule = {
   },
   equal_to: function (valueInput, paramsInput) {
     console.log("equal_to running");
-    let passSelector = document.querySelector('.' + paramsInput);
+    let passSelector = document.querySelector("." + paramsInput);
     let valuePass = passSelector.value;
     return valuePass === valueInput;
   },
-};
+}
+
+const messages = {
+  name_required: 'Tên không được để trống.',
+  email_required: 'Email không được để trống.'
+
+}
 
 //======================= Start Listener Function======================
 function handleSignUpClick(event) {
   event.preventDefault();
   //loop qua tung phan tu input validate
   for (const keyNameInput in rules) {
+
+    console.group();
     let inputElement = document.querySelector("." + keyNameInput);
     let valueInput = inputElement.value;
     console.log(inputElement);
+
+    //reset all error
+    inputElement.classList.remove("error");
+    inputElement.nextElementSibling.textContent = '';
+
     let ruleAllForInput = rules[keyNameInput];
     //loop qua tung rule validate cua input day
     for (const ruleItemKey in ruleAllForInput) {
       let paramsInput = ruleAllForInput[ruleItemKey];
       let result = methodsRule[ruleItemKey](valueInput, paramsInput);
+      let keyMessage = keyNameInput + '_' + ruleItemKey;
+      console.log(messages[keyMessage]);
       console.log("result", result);
+
+      //kiem tra validate rule that bai
+      if (!result) {
+        inputElement.classList.add("error");
+        inputElement.nextElementSibling.textContent = messages[keyMessage] ? messages[keyMessage] : keyNameInput + ' not valid';
+        break;
+      }
     }
+    console.groupEnd();
   }
 }
 
