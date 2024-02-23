@@ -26,19 +26,15 @@ const rules = {
 
 const methodsRule = {
   required: (valueInput, paramsInput) => {
-    console.log("required running");
     return valueInput !== "";
   },
   minlength: function (valueInput, paramsInput) {
-    console.log("minlength running");
     return valueInput.length >= paramsInput;
   },
   email: function (valueInput, paramsInput) {
-    console.log("email running");
     return regexEmail.test(valueInput);
   },
   equal_to: function (valueInput, paramsInput) {
-    console.log("equal_to running");
     let passSelector = document.querySelector("." + paramsInput);
     let valuePass = passSelector.value;
     return valuePass === valueInput;
@@ -57,33 +53,42 @@ function handleSignUpClick(event) {
   //loop qua tung phan tu input validate
   for (const keyNameInput in rules) {
 
-    console.group();
     let inputElement = document.querySelector("." + keyNameInput);
     let valueInput = inputElement.value;
-    console.log(inputElement);
 
     //reset all error
-    inputElement.classList.remove("error");
-    inputElement.nextElementSibling.textContent = '';
-
+    resetAllError(inputElement);
+    
     let ruleAllForInput = rules[keyNameInput];
     //loop qua tung rule validate cua input day
     for (const ruleItemKey in ruleAllForInput) {
+      //lấy ra value của object item rule
       let paramsInput = ruleAllForInput[ruleItemKey];
+      //kết quả validate từng rule trả về
       let result = methodsRule[ruleItemKey](valueInput, paramsInput);
       let keyMessage = keyNameInput + '_' + ruleItemKey;
-      console.log(messages[keyMessage]);
-      console.log("result", result);
 
       //kiem tra validate rule that bai
       if (!result) {
-        inputElement.classList.add("error");
-        inputElement.nextElementSibling.textContent = messages[keyMessage] ? messages[keyMessage] : keyNameInput + ' not valid';
+        showMessageError(inputElement, keyMessage, keyNameInput);
         break;
       }
     }
-    console.groupEnd();
   }
+}
+
+function showMessageError(inputElement, keyMessage, keyNameInput){
+  let message = keyNameInput + ' not valid';
+  inputElement.classList.add("error");
+  if(messages[keyMessage]){
+    message = messages[keyMessage];
+  }
+  inputElement.nextElementSibling.textContent = message;
+}
+
+function resetAllError(inputElement){
+  inputElement.classList.remove("error");
+  inputElement.nextElementSibling.textContent = '';
 }
 
 //3. Them su kien cho phan tu
