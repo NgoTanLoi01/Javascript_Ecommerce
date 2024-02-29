@@ -3,7 +3,10 @@ function Validate(options) {
   const container = document.querySelector(options.container);
   //2. Tat ca cac elements khac query dua vao container
   const btnSignUpSelector = container.querySelector(".btn-signup");
-  console.log(btnSignUpSelector, container);
+  const rules = options.rules;
+  const message = options.message;
+  console.log(message);
+  
 
   function initEventAndData() {
     btnSignUpSelector.addEventListener("click", handleSignUpClick);
