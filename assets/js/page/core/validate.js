@@ -1,10 +1,14 @@
 function Validate(options) {
-  //1. Lay ra container bao dong form
-  const container = document.querySelector(options.container);
-  //2. Tat ca cac elements khac query dua vao container
-  const btnSignUpSelector = container.querySelector(".btn-signup");
+  //Khai bao bien co options
+  const btnClassSubmit = options.btnClassSubmit || "btn-signup";
+  const errorClass = options.errorClass || "error";
+  const errorMessageClass = options.errorMessageClass || "error_message";
+  const formGroupClass = options.formGroupClass || "form-group";
   const rules = options.rules;
   const message = options.message;
+// Truy van Dom cua thu vien
+  const container = document.querySelector(options.container);
+  const btnSignUpSelector = container.querySelector("." + btnClassSubmit);
   let errors;
 
   const rulesMethod = {
@@ -34,7 +38,7 @@ function Validate(options) {
     for (const keyInputName in rules) {
       let inputSelector = container.querySelector("." + keyInputName);
       let valueInput = inputSelector.value;
-      rulesAllForInputItem = rules[keyInputName];
+      let rulesAllForInputItem = rules[keyInputName];
       //reset all errors
       resetErrors(inputSelector);
 
@@ -61,16 +65,17 @@ function Validate(options) {
   }
 
   function resetErrors(inputSelector) {
-    inputSelector.classList.remove("error");
-    inputSelector.nextElementSibling.textContent = "";
+    inputSelector.classList.remove(errorClass);
+    let divError = inputSelector.closest(`.${formGroupClass}`).querySelector(`.${errorMessageClass}`);
+    divError.textContent = "";
   }
 
   function showErrors() {
     //hiển thị lỗi
     errors.forEach(function (element) {
       let inputElement = element.elemnetError;
-      let divError = inputElement.nextElementSibling;
-      inputElement.classList.add("error");
+      let divError = element.elemnetError.closest(`.${formGroupClass}`).querySelector(`.${errorMessageClass}`);
+      inputElement.classList.add(errorClass);
       divError.textContent = element.message;
     });
   }
