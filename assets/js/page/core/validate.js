@@ -9,6 +9,14 @@ function Validate(options) {
 // Truy van Dom cua thu vien
   const container = document.querySelector(options.container);
   const btnSignUpSelector = container.querySelector("." + btnClassSubmit);
+
+  const messageDefault = {
+    required: 'This field is required',
+    minlength: 'Please enter at latest {min} character',
+    regex: 'Please enter true format',
+    equal_to: 'This field not same value'
+  }
+
   let errors;
 
   const rulesMethod = {
@@ -36,23 +44,25 @@ function Validate(options) {
     event.preventDefault();
     errors = [];
     for (const keyInputName in rules) {
-      let inputSelector = container.querySelector("." + keyInputName);
-      let valueInput = inputSelector.value;
-      let rulesAllForInputItem = rules[keyInputName];
+      const inputSelector = container.querySelector("." + keyInputName);
+      const valueInput = inputSelector.value;
+      const rulesAllForInputItem = rules[keyInputName];
       //reset all errors
       resetErrors(inputSelector);
 
       for (const rulesItemKey in rulesAllForInputItem) {
-        let valueRule = rulesAllForInputItem[rulesItemKey];
-        let result = rulesMethod[rulesItemKey](valueInput, valueRule);
-        let keyMessage = keyInputName + "_" + rulesItemKey;
+        const valueRule = rulesAllForInputItem[rulesItemKey];
+        const result = rulesMethod[rulesItemKey](valueInput, valueRule);
+        const keyMessage = keyInputName + "_" + rulesItemKey;
         if (!result) {
           //đẩy lỗi vào biến đang lưu trữ
+          let messageErrDefault = messageDefault[rulesItemKey];
+          messageErrDefault = messageErrDefault.replace('{min}', valueRule);
           errors.push({
             elemnetError: inputSelector,
             message: message[keyMessage]
               ? message[keyMessage]
-              : keyInputName + " not valid",
+              : messageErrDefault
           });
 
           break;
