@@ -6,16 +6,16 @@ function Validate(options) {
   const formGroupClass = options.formGroupClass || "form-group";
   const rules = options.rules;
   const message = options.message;
-// Truy van Dom cua thu vien
+  // Truy van Dom cua thu vien
   const container = document.querySelector(options.container);
   const btnSignUpSelector = container.querySelector("." + btnClassSubmit);
 
   const messageDefault = {
-    required: 'This field is required',
-    minlength: 'Please enter at latest {min} character',
-    regex: 'Please enter true format',
-    equal_to: 'This field not same value'
-  }
+    required: "This field is required",
+    minlength: "Please enter at latest {min} character",
+    regex: "Please enter true format",
+    equal_to: "This field not same value",
+  };
 
   let errors;
 
@@ -37,7 +37,44 @@ function Validate(options) {
   };
 
   function initEventAndData() {
+    //Sự kiện nhấn button submit form
     btnSignUpSelector.addEventListener("click", handleSignUpClick);
+    //Sự kiện input khi thay đổi value cho element
+    container
+      .querySelectorAll(`.${formGroupClass} input`)
+      .forEach(function (element) {
+        element.addEventListener("input", handleInputChange);
+      });
+  }
+
+  function handleInputChange(event) {
+    const inputSelector = event.target;
+    console.log("input dang change", event.target);
+  }
+
+  function validateOneElement(element) {
+    const valueInput = element.value;
+    const keyInputName = element.name;
+    const rulesAllForInputItem = rules[keyInputName];
+
+    for (const rulesItemKey in rulesAllForInputItem) {
+      const valueRule = rulesAllForInputItem[rulesItemKey];
+      const result = rulesMethod[rulesItemKey](valueInput, valueRule);
+      const keyMessage = keyInputName + "_" + rulesItemKey;
+      if (!result) {
+        //đẩy lỗi vào biến đang lưu trữ
+        let messageErrDefault = messageDefault[rulesItemKey];
+        messageErrDefault = messageErrDefault.replace("{min}", valueRule);
+        errors.push({
+          elemnetError: element,
+          message: message[keyMessage]
+            ? message[keyMessage]
+            : messageErrDefault,
+        });
+
+        break;
+      }
+    }
   }
 
   function handleSignUpClick(event) {
@@ -45,30 +82,12 @@ function Validate(options) {
     errors = [];
     for (const keyInputName in rules) {
       const inputSelector = container.querySelector("." + keyInputName);
-      const valueInput = inputSelector.value;
-      const rulesAllForInputItem = rules[keyInputName];
       //reset all errors
       resetErrors(inputSelector);
-
-      for (const rulesItemKey in rulesAllForInputItem) {
-        const valueRule = rulesAllForInputItem[rulesItemKey];
-        const result = rulesMethod[rulesItemKey](valueInput, valueRule);
-        const keyMessage = keyInputName + "_" + rulesItemKey;
-        if (!result) {
-          //đẩy lỗi vào biến đang lưu trữ
-          let messageErrDefault = messageDefault[rulesItemKey];
-          messageErrDefault = messageErrDefault.replace('{min}', valueRule);
-          errors.push({
-            elemnetError: inputSelector,
-            message: message[keyMessage]
-              ? message[keyMessage]
-              : messageErrDefault
-          });
-
-          break;
-        }
-      }
+      //CHeck validate passed for one element input
+      validateOneElement(inputSelector);
     }
+    //Hien thi loi
     if (errors.length) {
       showErrors();
     }
@@ -76,7 +95,9 @@ function Validate(options) {
 
   function resetErrors(inputSelector) {
     inputSelector.classList.remove(errorClass);
-    let divError = inputSelector.closest(`.${formGroupClass}`).querySelector(`.${errorMessageClass}`);
+    let divError = inputSelector
+      .closest(`.${formGroupClass}`)
+      .querySelector(`.${errorMessageClass}`);
     divError.textContent = "";
   }
 
@@ -84,7 +105,9 @@ function Validate(options) {
     //hiển thị lỗi
     errors.forEach(function (element) {
       let inputElement = element.elemnetError;
-      let divError = element.elemnetError.closest(`.${formGroupClass}`).querySelector(`.${errorMessageClass}`);
+      let divError = element.elemnetError
+        .closest(`.${formGroupClass}`)
+        .querySelector(`.${errorMessageClass}`);
       inputElement.classList.add(errorClass);
       divError.textContent = element.message;
     });
