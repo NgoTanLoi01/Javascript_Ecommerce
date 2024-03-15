@@ -48,8 +48,17 @@ function Validate(options) {
   }
 
   function handleInputChange(event) {
+    errors = errors || [];
     const inputSelector = event.target;
-    console.log("input dang change", event.target);
+    //Xoa bo loi element input ra khoi mang loi
+    errors = errors.filter(function (element) {
+      return element.elemnetError.name !== inputSelector.name;
+    });
+    //them loi vao neu element co loi
+    validateOneElement(inputSelector);
+    resetErrors(inputSelector);
+    //Hien thi loi
+    showErrors();
   }
 
   function validateOneElement(element) {
@@ -72,7 +81,7 @@ function Validate(options) {
             : messageErrDefault,
         });
 
-        break;
+        return false;
       }
     }
   }
@@ -88,9 +97,7 @@ function Validate(options) {
       validateOneElement(inputSelector);
     }
     //Hien thi loi
-    if (errors.length) {
-      showErrors();
-    }
+    showErrors();
   }
 
   function resetErrors(inputSelector) {
@@ -102,17 +109,17 @@ function Validate(options) {
   }
 
   function showErrors() {
-    //hiển thị lỗi
-    errors.forEach(function (element) {
-      let inputElement = element.elemnetError;
-      let divError = element.elemnetError
-        .closest(`.${formGroupClass}`)
-        .querySelector(`.${errorMessageClass}`);
-      inputElement.classList.add(errorClass);
-      divError.textContent = element.message;
-    });
+    if (errors.length) {
+      errors.forEach(function (element) {
+        let inputElement = element.elemnetError;
+        let divError = element.elemnetError
+          .closest(`.${formGroupClass}`)
+          .querySelector(`.${errorMessageClass}`);
+        inputElement.classList.add(errorClass);
+        divError.textContent = element.message;
+      });
+    }
   }
-
   //add event listener + data init
   initEventAndData();
 }
