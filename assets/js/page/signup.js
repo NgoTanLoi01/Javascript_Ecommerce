@@ -24,4 +24,7 @@ let signupInstanceValidate = new Validate({
     email_required: "Email không được để trống",
     email_regex: "Email không đúng định dạng",
   },
+  success: function(){
+    console.log('validate success');
+  }
 });

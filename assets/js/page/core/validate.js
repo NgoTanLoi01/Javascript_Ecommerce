@@ -98,6 +98,12 @@ function Validate(options) {
     }
     //Hien thi loi
     showErrors();
+
+    //Goi ham thanh cong khi khong co loi trong form
+    if(!errors.length){
+      let successForm = options.success;
+      successForm();
+    }
   }
 
   function resetErrors(inputSelector) {
