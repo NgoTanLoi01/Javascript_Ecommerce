@@ -27,7 +27,11 @@ let signupInstanceValidate = new Validate({
   success: function(){
     //1. Lay du lieu tu input
     let dataForm = {};
-    let users = [];
+
+    //1.chua co thong tin user trong localStorage
+    let users =  JSON.parse(localStorage.getItem('users')) || [];
+    console.log(users);
+
     document.querySelectorAll('.form_register input').forEach(function(element){
       if(element.name !=='confirm_password'){
         dataForm[element.name] = element.value;
