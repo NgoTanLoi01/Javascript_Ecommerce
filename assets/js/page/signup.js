@@ -1,4 +1,5 @@
-const tooglePass = document.querySelector('.toogle_password');
+const formRegister = document.querySelector(".form_register");
+const tooglePass = formRegister.querySelector(".toogle_password");
 
 function rules() {
   return {
@@ -35,7 +36,7 @@ function validateSucsess() {
   let dataForm = {};
   let users = JSON.parse(localStorage.getItem("users")) || [];
   //check email is exit
-  const email = document.querySelector(".form_register .email").value;
+  const email = formRegister.querySelector(".email").value;
   //Su dung some de check email trung nhau
   let isEmailExit = users.some(function (element) {
     return element.email === email;
@@ -53,29 +54,34 @@ function validateSucsess() {
 
   //Neu email chua ton tai thi them user vao local
   if (!isEmailExit) {
-    document
-      .querySelectorAll(".form_register input")
-      .forEach(function (element) {
-        if (element.name !== "confirm_password") {
-          dataForm[element.name] = element.value;
-        }
-      });
+    formRegister.querySelectorAll("input").forEach(function (element) {
+      if (element.name !== "confirm_password") {
+        dataForm[element.name] = element.value;
+      }
+    });
     //2.1 Create data users array
     dataForm["id"] = crypto.randomUUID();
+    dataForm["status"] = "";
+
     users.push(dataForm);
     //2.2 Save to localStorage
     localStorage.setItem("users", JSON.stringify(users));
+    //3. Redirect to page login
+    window.location.href = '/login.html';
   }
 }
 
-function handleTogglePass(event){
+function handleTogglePass(event) {
   const clicked = event.target;
-  const inputChangeType = clicked.closest('.form-group').querySelector('.password');
-  const type = inputChangeType.getAttribute('type') === 'password' ? 'text' : 'password';
+  const inputChangeType = clicked
+    .closest(".form-group")
+    .querySelector(".password");
+  const type =
+    inputChangeType.getAttribute("type") === "password" ? "text" : "password";
 
-  inputChangeType.setAttribute('type', type); 
-  clicked.classList.toggle('fa-eye-slash');
-  clicked.classList.toggle('fa-eye');
+  inputChangeType.setAttribute("type", type);
+  clicked.classList.toggle("fa-eye-slash");
+  clicked.classList.toggle("fa-eye");
 
   // if(type === 'password'){
   //   //Xoa class the hien pass an
@@ -88,8 +94,7 @@ function handleTogglePass(event){
   // }
 }
 
-
-tooglePass.addEventListener('click', handleTogglePass);
+tooglePass.addEventListener("click", handleTogglePass);
 //config validate form
 let signupInstanceValidate = new Validate({
   container: ".form_register",
