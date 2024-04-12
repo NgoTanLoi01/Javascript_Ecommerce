@@ -1,6 +1,6 @@
 function showDataCateFromLocal() {
   //1. Lay toan bo danh muc trong local
-  const categories = JSON.parse(localStorage.getItem("categories"));
+  const categories = JSON.parse(localStorage.getItem("categories")) || [];
   //2. Xay dung cau truc HTML cho danh muc
   let htmlResult = "";
   categories.forEach(function (element) {
@@ -10,13 +10,13 @@ function showDataCateFromLocal() {
           <td>${element.name}</td>
           <td>
               <button class="btn_common btn_edit">Edit</button>
-              <button class="btn_common btn_delete">Delete</button>
+              <button data-id ="${element.id}" class="btn_common btn_delete">Delete</button>
           </td>
       </tr>`;
   });
 
   //2. Dua ket qua toan bo danh muc vao tbody cua table
-  document.querySelector('.category_table').innerHTML = htmlResult;
+  document.querySelector(".category_table").innerHTML = htmlResult;
 }
 
 function validateSucsess() {
@@ -29,11 +29,29 @@ function validateSucsess() {
   };
   //3. Dua object vao trong mang category
   const categories = JSON.parse(localStorage.getItem("categories")) || [];
-  const categoriesUpdate = [...categories, newCate];
+  const categoriesUpdate = [newCate, ...categories];
   //4. Luu vao trong local
   localStorage.setItem("categories", JSON.stringify(categoriesUpdate));
   //5. Hien thi du lieu ngay lap tuc khi them thanh cong
   showDataCateFromLocal();
+}
+
+function handleProcessData(event) {
+  const clicked = event.target;
+  //Lay ra tat ca danh muc trong local
+  const categories = JSON.parse(localStorage.getItem("categories")) || [];
+  if (clicked.classList.contains("btn_delete") && confirm('Bạn chắc chắn muốn delete?')) {
+    const idDelete = clicked.getAttribute("data-id");
+    // mảng lọc ra các phần tử cần delete
+    const categoriesFilter = categories.filter(function (element) {
+      return element.id !== idDelete;
+    });
+
+    //Lưu vào localStorage
+    localStorage.setItem("categories", JSON.stringify(categoriesFilter));
+    //5. Hien thi du lieu ngay lap tuc khi them thanh cong -- Rerender app
+    showDataCateFromLocal();
+  }
 }
 
 // Hien thi du lieu category tu local
@@ -51,3 +69,7 @@ let validateCategory = new Validate({
   },
   success: validateSucsess,
 });
+
+document
+  .querySelector(".category_table")
+  .addEventListener("click", handleProcessData);
