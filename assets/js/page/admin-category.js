@@ -1,3 +1,7 @@
+const tbodyCate = document.querySelector(".category_table");
+const categoryInputName = document.querySelector('.category_name');
+const buttonSave = document.querySelector('.btn_category_save');
+
 function showDataCateFromLocal() {
   //1. Lay toan bo danh muc trong local
   const categories = JSON.parse(localStorage.getItem("categories")) || [];
@@ -9,19 +13,19 @@ function showDataCateFromLocal() {
       `<tr>
           <td>${element.name}</td>
           <td>
-              <button class="btn_common btn_edit">Edit</button>
+              <button data-id ="${element.id}" class="btn_common btn_edit">Edit</button>
               <button data-id ="${element.id}" class="btn_common btn_delete">Delete</button>
           </td>
       </tr>`;
   });
 
   //2. Dua ket qua toan bo danh muc vao tbody cua table
-  document.querySelector(".category_table").innerHTML = htmlResult;
+  tbodyCate.innerHTML = htmlResult;
 }
 
 function validateSucsess() {
   //1. Lay ra thong tin cua doanh muc
-  const nameCategory = document.querySelector(".category_name").value;
+  const nameCategory = categoryInputName.value;
   //2. Tao ra object chua thong tin danh muc
   const newCate = {
     id: crypto.randomUUID(),
@@ -40,7 +44,12 @@ function handleProcessData(event) {
   const clicked = event.target;
   //Lay ra tat ca danh muc trong local
   const categories = JSON.parse(localStorage.getItem("categories")) || [];
-  if (clicked.classList.contains("btn_delete") && confirm('Bạn chắc chắn muốn delete?')) {
+
+  //Khi người dùng click và btn delete
+  if (
+    clicked.classList.contains("btn_delete") &&
+    confirm("Bạn chắc chắn muốn delete?")
+  ) {
     const idDelete = clicked.getAttribute("data-id");
     // mảng lọc ra các phần tử cần delete
     const categoriesFilter = categories.filter(function (element) {
@@ -51,6 +60,33 @@ function handleProcessData(event) {
     localStorage.setItem("categories", JSON.stringify(categoriesFilter));
     //5. Hien thi du lieu ngay lap tuc khi them thanh cong -- Rerender app
     showDataCateFromLocal();
+  }
+
+  //Khi người dùng click và btn edit
+  else if (clicked.classList.contains("btn_edit")) {
+    //1. Lấy ra id của element edit
+    const idEdit = clicked.getAttribute("data-id");
+    //2. Lấy ra object element theo id edit
+    // let elementEit = undefined;
+    // for(let i = 0; i < categories.length; i++){
+    //   if(categories[i].id === idEdit){
+    //     elementEit = categories[i];
+    //     break;
+    //   }
+    // }
+    const elementEitting = categories.find(function (element) {
+      return element.id === idEdit;
+    });
+    //3. Đưa name lên ô input đang chỉnh sửa
+    categoryInputName.value = elementEitting.name;
+    //4. Chỉnh sửa để người dùng nhận biết hiện tại đang edit form
+      //4.1. Thay đổi text botton update
+      buttonSave.textContent = 'Update';
+      //4.2. Thêm class để biết là update
+      buttonSave.classList.add('update');
+      //4.3. Thêm id để biết update cho object nào 
+      buttonSave.setAttribute('data-id', idEdit);
+
   }
 }
 
@@ -70,6 +106,4 @@ let validateCategory = new Validate({
   success: validateSucsess,
 });
 
-document
-  .querySelector(".category_table")
-  .addEventListener("click", handleProcessData);
+tbodyCate.addEventListener("click", handleProcessData);
