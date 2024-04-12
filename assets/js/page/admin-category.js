@@ -1,6 +1,6 @@
 const tbodyCate = document.querySelector(".category_table");
-const categoryInputName = document.querySelector('.category_name');
-const buttonSave = document.querySelector('.btn_category_save');
+const categoryInputName = document.querySelector(".category_name");
+const buttonSave = document.querySelector(".btn_category_save");
 
 function showDataCateFromLocal() {
   //1. Lay toan bo danh muc trong local
@@ -24,6 +24,44 @@ function showDataCateFromLocal() {
 }
 
 function validateSucsess() {
+  if (buttonSave.classList.contains("update")) {
+    updateCategory();
+  } else {
+    addCategory();
+  }
+}
+
+function updateCategory() {
+  //1. Lay ra thong tin cua doanh muc
+  const nameCategory = categoryInputName.value;
+  //2. Tạo ra dữ liệu update
+  //2.1 Lấy ra id update
+  const categories = JSON.parse(localStorage.getItem("categories")) || [];
+
+  const idUpdate = buttonSave.getAttribute("data-id");
+  const categoriesUpdate = categories.map(function (element) {
+    if (element.id === idUpdate) {
+      return {
+        id: element.id,
+        name: nameCategory
+      };
+    } else{
+      return element;
+    }
+  });
+  //3. Luu vao localStorage
+  localStorage.setItem("categories", JSON.stringify(categoriesUpdate));
+  //4. Hien thi du lieu ngay lap tuc khi them thanh cong
+  showDataCateFromLocal();
+  //5. reset form
+  categoryInputName.value = '';
+  //6. reset form den trang thai add category
+  buttonSave.textContent = 'Save';
+  buttonSave.removeAttribute('data-id');
+  buttonSave.classList.remove('update');
+}
+
+function addCategory() {
   //1. Lay ra thong tin cua doanh muc
   const nameCategory = categoryInputName.value;
   //2. Tao ra object chua thong tin danh muc
@@ -38,6 +76,8 @@ function validateSucsess() {
   localStorage.setItem("categories", JSON.stringify(categoriesUpdate));
   //5. Hien thi du lieu ngay lap tuc khi them thanh cong
   showDataCateFromLocal();
+  //6. reset form
+  categoryInputName.value = '';
 }
 
 function handleProcessData(event) {
@@ -80,13 +120,12 @@ function handleProcessData(event) {
     //3. Đưa name lên ô input đang chỉnh sửa
     categoryInputName.value = elementEitting.name;
     //4. Chỉnh sửa để người dùng nhận biết hiện tại đang edit form
-      //4.1. Thay đổi text botton update
-      buttonSave.textContent = 'Update';
-      //4.2. Thêm class để biết là update
-      buttonSave.classList.add('update');
-      //4.3. Thêm id để biết update cho object nào 
-      buttonSave.setAttribute('data-id', idEdit);
-
+    //4.1. Thay đổi text botton update
+    buttonSave.textContent = "Update";
+    //4.2. Thêm class để biết là update
+    buttonSave.classList.add("update");
+    //4.3. Thêm id để biết update cho object nào
+    buttonSave.setAttribute("data-id", idEdit);
   }
 }
 
