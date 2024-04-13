@@ -43,9 +43,9 @@ function updateCategory() {
     if (element.id === idUpdate) {
       return {
         id: element.id,
-        name: nameCategory
+        name: nameCategory,
       };
-    } else{
+    } else {
       return element;
     }
   });
@@ -53,12 +53,16 @@ function updateCategory() {
   localStorage.setItem("categories", JSON.stringify(categoriesUpdate));
   //4. Hien thi du lieu ngay lap tuc khi them thanh cong
   showDataCateFromLocal();
-  //5. reset form
-  categoryInputName.value = '';
+  //5. reset form to add category
+  resetToAddCategory();
+}
+
+function resetToAddCategory() {
+  categoryInputName.value = "";
   //6. reset form den trang thai add category
-  buttonSave.textContent = 'Save';
-  buttonSave.removeAttribute('data-id');
-  buttonSave.classList.remove('update');
+  buttonSave.textContent = "Save";
+  buttonSave.removeAttribute("data-id");
+  buttonSave.classList.remove("update");
 }
 
 function addCategory() {
@@ -77,7 +81,7 @@ function addCategory() {
   //5. Hien thi du lieu ngay lap tuc khi them thanh cong
   showDataCateFromLocal();
   //6. reset form
-  categoryInputName.value = '';
+  categoryInputName.value = "";
 }
 
 function handleProcessData(event) {
@@ -100,6 +104,10 @@ function handleProcessData(event) {
     localStorage.setItem("categories", JSON.stringify(categoriesFilter));
     //5. Hien thi du lieu ngay lap tuc khi them thanh cong -- Rerender app
     showDataCateFromLocal();
+    //6. Kiểm tra nếu id xóa trùng với update thì reset to status add cate
+    if (idDelete === buttonSave.getAttribute('data-id')) {
+      resetToAddCategory();
+    }
   }
 
   //Khi người dùng click và btn edit
