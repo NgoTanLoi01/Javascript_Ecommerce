@@ -45,6 +45,16 @@ function Validate(options) {
       .forEach(function (element) {
         element.addEventListener("input", handleInputChange);
       });
+    container
+      .querySelectorAll(`.${formGroupClass} select`)
+      .forEach(function (element) {
+        element.addEventListener("input", handleInputChange);
+      });
+    container
+      .querySelectorAll(`.${formGroupClass} textarea`)
+      .forEach(function (element) {
+        element.addEventListener("input", handleInputChange);
+      });
   }
 
   function handleInputChange(event) {
@@ -100,7 +110,7 @@ function Validate(options) {
     showErrors();
 
     //Goi ham thanh cong khi khong co loi trong form
-    if(!errors.length){
+    if (!errors.length) {
       let successForm = options.success;
       successForm();
     }
