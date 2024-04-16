@@ -14,13 +14,26 @@ function showCategoryInProduct() {
 }
 
 function validateProductSucsess() {
-  //1. Lấy ra value của input
+  //1. Lấy ra value của input và tạo ra obj chưa thông tin sản phẩm
   let objValue = {};
-  const inputAll = document.querySelectorAll(".form-control-item");
+  const inputAll = formProduct.querySelectorAll(".form-control-item");
   inputAll.forEach(function (element) {
-    objValue[element.name] = element.value;
+    if (element.name === "category_wrapper_form") {
+      objValue["category_id"] = element.value;
+    } else {
+      objValue[element.name] = element.value;
+    }
   });
-  console.log(objValue);
+  objValue.id = crypto.randomUUID();
+  const productType = document.querySelector(".type_product:checked").value;
+  objValue.product_type = productType;
+
+  //2. Đưa obj vào trong mảng
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  const productsNew = [objValue, ...products];
+
+  //3. Lưu dữ liệu vào localStorage
+  localStorage.setItem("products", JSON.stringify(productsNew));
 }
 
 // Hiển thị danh mục khi load trang lần đầu
