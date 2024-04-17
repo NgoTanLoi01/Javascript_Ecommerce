@@ -1,5 +1,6 @@
 const selectCate = document.querySelector(".category_wrapper_form");
 const formProduct = document.querySelector("#form_save_product");
+const tbodyProduct = document.querySelector(".product_table");
 
 function showCategoryInProduct() {
   //1. Lấy toàn bộ danh mục trong local
@@ -53,12 +54,33 @@ function showProductInLocal() {
         </td>
         <td>
             <button class="btn_common btn_edit">Edit</button>
-            <button class="btn_common btn_delete">Delete</button>
+            <button class="btn_common btn_delete" data-id = "${element.id}">Delete</button>
         </td>
     </tr>`;
   });
 
-  document.querySelector('.product_table').innerHTML = htmlResult;
+  tbodyProduct.innerHTML = htmlResult;
+}
+
+function handleProcessProduct(event){
+  const clicked = event.target;
+  
+  //Kiểm tra nếu click vào button delete mới xử lý xóa
+  if(clicked.classList.contains('btn_delete') && confirm('Bạn chắc chắc muốn xóa sản phẩm?')){
+    //1. Lấy ra id của object cần xóa
+    const idDelete = clicked.getAttribute('data-id');
+    //2. Xóa obj có chưa idDelete
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const productsFilter = products.filter(
+      function(element){
+        return element.id !== idDelete;
+      }
+    );
+    //3. Lưu dữ liệu là vào localStorage
+    localStorage.setItem('products', JSON.stringify(productsFilter));
+    //4. Hiển thị dữ liệu lại ngay lập tức
+    showProductInLocal();
+  }
 }
 
 // Hiển thị danh mục khi load lại trang
@@ -90,3 +112,6 @@ let validateProduct = new Validate({
   },
   success: validateProductSucsess,
 });
+
+//Thêm sự kiện xóa và edit cho sản phẩm
+tbodyProduct.addEventListener('click', handleProcessProduct);
