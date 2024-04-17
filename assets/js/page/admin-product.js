@@ -34,11 +34,37 @@ function validateProductSucsess() {
 
   //3. Lưu dữ liệu vào localStorage
   localStorage.setItem("products", JSON.stringify(productsNew));
+
+  //4. Hiển thị dữ liệu từ trong local
+  showProductInLocal();
 }
 
-// Hiển thị danh mục khi load trang lần đầu
-showCategoryInProduct();
+function showProductInLocal() {
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+  let htmlResult = "";
+  products.forEach(function (element) {
+    htmlResult =
+      htmlResult +
+      `<tr>
+        <td>${element.name}</td>
+        <td>${element.price_product}</td>
+        <td>
+            <img src="${element.image}" alt="/">
+        </td>
+        <td>
+            <button class="btn_common btn_edit">Edit</button>
+            <button class="btn_common btn_delete">Delete</button>
+        </td>
+    </tr>`;
+  });
 
+  document.querySelector('.product_table').innerHTML = htmlResult;
+}
+
+// Hiển thị danh mục khi load lại trang
+showCategoryInProduct();
+// Hiển thị sản phẩm khi load lại trang
+showProductInLocal();
 let validateProduct = new Validate({
   container: "#form_save_product",
   btnClassSubmit: "btn_save",
