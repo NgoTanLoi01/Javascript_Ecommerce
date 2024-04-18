@@ -53,7 +53,7 @@ function showProductInLocal() {
             <img src="${element.image}" alt="/">
         </td>
         <td>
-            <button class="btn_common btn_edit">Edit</button>
+            <button class="btn_common btn_edit" data-id = "${element.id}">Edit</button>
             <button class="btn_common btn_delete" data-id = "${element.id}">Delete</button>
         </td>
     </tr>`;
@@ -62,24 +62,43 @@ function showProductInLocal() {
   tbodyProduct.innerHTML = htmlResult;
 }
 
-function handleProcessProduct(event){
+function handleProcessProduct(event) {
   const clicked = event.target;
-  
+
   //Kiểm tra nếu click vào button delete mới xử lý xóa
-  if(clicked.classList.contains('btn_delete') && confirm('Bạn chắc chắc muốn xóa sản phẩm?')){
+  if (
+    clicked.classList.contains("btn_delete") &&
+    confirm("Bạn chắc chắc muốn xóa sản phẩm?")
+  ) {
     //1. Lấy ra id của object cần xóa
-    const idDelete = clicked.getAttribute('data-id');
+    const idDelete = clicked.getAttribute("data-id");
     //2. Xóa obj có chưa idDelete
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-    const productsFilter = products.filter(
-      function(element){
-        return element.id !== idDelete;
-      }
-    );
+    const products = JSON.parse(localStorage.getItem("products")) || [];
+    const productsFilter = products.filter(function (element) {
+      return element.id !== idDelete;
+    });
     //3. Lưu dữ liệu là vào localStorage
-    localStorage.setItem('products', JSON.stringify(productsFilter));
+    localStorage.setItem("products", JSON.stringify(productsFilter));
     //4. Hiển thị dữ liệu lại ngay lập tức
     showProductInLocal();
+  } else if (clicked.classList.contains("btn_edit")) {
+    //1. Lay ra id Edit
+    const idEdit = clicked.getAttribute("data-id");
+    //2. Lay ra obj chua idEdit
+    const products = JSON.parse(localStorage.getItem("products")) || [];
+    const elementEditing = products.find(function (element) {
+      return element.id === idEdit;
+    });
+    //3. Đưa dữ liệu obj edit lấy được vào trong form
+    const inputAll = formProduct.querySelectorAll(".form-control-item");
+
+    //3.1. Đưa value vào input trừ radio
+    inputAll.forEach(function (element) {
+      const keyName = element.name === 'category_wrapper_form' ? 'category_id' : element.name;
+      element.value = elementEditing[keyName];
+    });
+    //3.2. Đưa value vào radio box
+    document.querySelector(`.type_product[value="${elementEditing.product_type}"]`).checked = true;
   }
 }
 
@@ -114,4 +133,4 @@ let validateProduct = new Validate({
 });
 
 //Thêm sự kiện xóa và edit cho sản phẩm
-tbodyProduct.addEventListener('click', handleProcessProduct);
+tbodyProduct.addEventListener("click", handleProcessProduct);
